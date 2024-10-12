@@ -9,11 +9,15 @@
 #define TAM_MAX_EMAIL 50
 #define TAM_MAX_SENHA 20
 #define TAM_ID 20
+#define TAM_DESC (127+1)
 
 typedef struct produto_t{
 
-    char id[TAM_ID];
-    int qntd_produtos;
+    int id_produto;
+    char nome[TAM_NOME];
+    char descricao[TAM_DESC];
+    int qntd;
+    int identificador_vendedor;
 
 }produto_s;
     
@@ -25,11 +29,26 @@ typedef struct perfis_t{
     char email[TAM_MAX_EMAIL];
     char senha[TAM_MAX_SENHA];
     int indentificador;
+    int* id_produtos_Vendidos;
+    int tam_produtos_Vendidos;
+    int* id_produtos_Favoritos;
+    int tam_produtos_Favoritos;
 
 }perfis_s;
 
+int* RealocaInt(int tamanho, int* vetor){
 
+    vetor = (int*)realloc(vetor, tamanho*sizeof(int));
 
+    return vetor; 
+}
+
+produto_s* RealocProd(int n_prod, produto_s* produtos){
+
+    produtos = (produto_s*)realloc(produtos, n_prod*sizeof(produto_s));
+
+    return produtos;
+}
 
 perfis_s* Reallocarperfis(int n_perfis, perfis_s* perfis){
     
@@ -110,8 +129,45 @@ int LerArquivo(perfis_s* perfis){
 }/*/
 
 
-void DigitarDados(perfis_s* perfis, int n_perfis){
+ void CadastrarProduto(produto_s* produtos, int n_produtos, perfis_s* perfis, int n_perfis){
+
+    produtos[n_produtos-1].id_produto = n_produtos;
+
+    printf("Digite o nome do produto: \n");
+    fgets(produtos[n_produtos-1].nome,TAM_NOME,stdin);
+    produtos[n_produtos-1].nome[strcspn(produtos[n_produtos-1].nome, "\n")] = '\0';
+
+    printf("Digite uma breve descricao do produto:\n");
+    fgets(produtos[n_produtos-1].descricao,TAM_NOME,stdin);
+    produtos[n_produtos-1].descricao[strcspn(produtos[n_produtos-1].descricao, "\n")] = '\0';
+
+    printf("Digite a quantidade desse produto\n");
+    scanf("%d",&produtos[n_produtos-1].qntd);
+
+    printf("Insira o ID do usuario a qual esse produto pertence: \n");
+    scanf("%d",&produtos[n_produtos-1].identificador_vendedor);
+
+    perfis_s* perfilEscolhido = &perfis[produtos[n_produtos-1].identificador_vendedor-1];
+
+    perfilEscolhido->tam_produtos_Vendidos++;
+
+    perfilEscolhido->id_produtos_Vendidos = RealocaInt(perfilEscolhido->tam_produtos_Vendidos,perfilEscolhido->id_produtos_Vendidos);
+
+    perfilEscolhido->id_produtos_Vendidos[perfilEscolhido->tam_produtos_Vendidos-1] = produtos[n_produtos-1].id_produto;
+
+    printf("Produto Cadastrado!\n");
+
+    return;
+}
+
+void CadastrarPerfil(perfis_s* perfis, int n_perfis){
     int erro, arroba;
+
+    perfis[n_perfis-1].tam_produtos_Vendidos = 0;
+    perfis[n_perfis-1].id_produtos_Vendidos = NULL;
+    perfis[n_perfis-1].tam_produtos_Favoritos = 0;
+    perfis[n_perfis-1].id_produtos_Favoritos = NULL;
+
 
     perfis[n_perfis-1].indentificador = n_perfis;
 
@@ -284,7 +340,7 @@ int Logado(perfis_s* perfis, int n_perfis, int n_logado){
             case 0:
 
                 printf("ate!\n");
-                return;
+                return 0;
                 
             default:
                 printf("opcao invalida\n");
@@ -348,7 +404,8 @@ void Logar(perfis_s * perfis, int n_perfis){
 int main(int argv, char ** argc){
 
     perfis_s* perfis= NULL;
-    int n_perfis = 0;
+    produto_s* produtos = NULL;
+    int n_perfis = 0, n_produtos = 0;
     int opcao;
 
 ////    FILE * perfil_a;
@@ -364,6 +421,7 @@ int main(int argv, char ** argc){
         printf("\t1 - Cadastrar perfil\n");
         printf("\t2 - Imprimir Perfis\n");
         printf("\t3 - Logar\n");
+        printf("\t4 - Cadastrar produto\n");
         printf("\t0 - Sair\n");
         scanf("%d%*c", &opcao);
 
@@ -372,7 +430,7 @@ int main(int argv, char ** argc){
         case 1:
             n_perfis++;
             perfis = Reallocarperfis(n_perfis, perfis);
-            DigitarDados(perfis, n_perfis);
+            CadastrarPerfil(perfis, n_perfis);
             
             break;
 
@@ -391,6 +449,13 @@ int main(int argv, char ** argc){
             Logar(perfis, n_perfis);
 
             break;
+        case 4:
+
+            n_produtos++;
+            produtos = RealocProd(n_produtos,produtos);
+            CadastrarProduto(produtos,n_produtos,perfis,n_perfis);
+
+            break;
 
         case 0:
             printf("Tchau!\n");
@@ -401,6 +466,10 @@ int main(int argv, char ** argc){
         }
     }while(opcao != 0);
   //  fclose(perfil_a);
+
+    free(produtos);
+    free(perfis);
+
     return sucesso;
 
 }
