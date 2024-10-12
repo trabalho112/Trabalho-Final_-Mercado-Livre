@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "../include/Logado.h"
+#include "../include/Menu.h"
 #include "../include/Logar.h"
 
 
@@ -238,7 +238,7 @@ void Logar(perfis_s * perfis, int n_perfis){
                 if(n_logado == 0){
                     return;
                 }
-                opcao = Logado(perfis, n_perfis, n_logado);
+                opcao = MenuLogado(perfis, n_perfis, n_logado);
                 break;
 
             case 2:
@@ -246,7 +246,7 @@ void Logar(perfis_s * perfis, int n_perfis){
                 if(n_logado == 0){
                     return;
                 }
-                opcao = Logado(perfis, n_perfis, n_logado);
+                opcao = MenuLogado(perfis, n_perfis, n_logado);
                 break;    
 
             case 0:
