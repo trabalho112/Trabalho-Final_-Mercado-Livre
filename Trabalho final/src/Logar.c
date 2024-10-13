@@ -5,8 +5,10 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "../include/Menu.h"
+
 #include "../include/Logar.h"
+#include "../include/Menu.h"
+#include "../include/Produtos.h"
 
 
 
@@ -17,12 +19,6 @@ int* RealocaInt(int tamanho, int* vetor){
     return vetor; 
 }
 
-produto_s* RealocProd(int n_prod, produto_s* produtos){
-
-    produtos = (produto_s*)realloc(produtos, n_prod*sizeof(produto_s));
-
-    return produtos;
-}
 
 perfis_s* Reallocarperfis(int n_perfis, perfis_s* perfis){
     
@@ -31,37 +27,6 @@ perfis_s* Reallocarperfis(int n_perfis, perfis_s* perfis){
     return perfis;
 }
 
-void CadastrarProduto(produto_s* produtos, int n_produtos, perfis_s* perfis, int n_perfis){
-
-
-    produtos[n_produtos-1].id_produto = n_produtos;
-
-    printf("Digite o nome do produto: \n");
-    fgets(produtos[n_produtos-1].nome,TAM_NOME,stdin);
-    produtos[n_produtos-1].nome[strcspn(produtos[n_produtos-1].nome, "\n")] = '\0';
-
-    printf("Digite uma breve descricao do produto:\n");
-    fgets(produtos[n_produtos-1].descricao,TAM_NOME,stdin);
-    produtos[n_produtos-1].descricao[strcspn(produtos[n_produtos-1].descricao, "\n")] = '\0';
-
-    printf("Digite a quantidade desse produto\n");
-    scanf("%d",&produtos[n_produtos-1].qntd);
-
-    printf("Insira o ID do usuario a qual esse produto pertence: \n");
-    scanf("%d",&produtos[n_produtos-1].identificador_vendedor);
-
-    perfis_s* perfilEscolhido = &perfis[produtos[n_produtos-1].identificador_vendedor-1];
-
-    perfilEscolhido->tam_produtos_Vendidos++;
-
-    perfilEscolhido->id_produtos_Vendidos = RealocaInt(perfilEscolhido->tam_produtos_Vendidos,perfilEscolhido->id_produtos_Vendidos);
-
-    perfilEscolhido->id_produtos_Vendidos[perfilEscolhido->tam_produtos_Vendidos-1] = produtos[n_produtos-1].id_produto;
-
-    printf("Produto Cadastrado!\n");
-
-    return;
-}
 
 void CadastrarPerfil(perfis_s* perfis, int n_perfis){
     int erro, arroba;

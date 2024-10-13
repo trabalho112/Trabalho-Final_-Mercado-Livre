@@ -5,8 +5,10 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "../include/Menu.h"
+
 #include "../include/Logar.h"
+#include "../include/Menu.h"
+#include "../include/Produtos.h"
 
     
 

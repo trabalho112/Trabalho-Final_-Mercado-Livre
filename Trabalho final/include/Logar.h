@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+
+
 #define sucesso 0
 #define TAM_NOME 50
 #define TAM_MAX_EMAIL 50
@@ -21,7 +23,7 @@ typedef struct produto_t{
     char nome[TAM_NOME];
     char descricao[TAM_DESC];
     int qntd;
-    int identificador_vendedor;
+    char identificador_vendedor[TAM_ID];
 
 }produto_s;
     
@@ -43,11 +45,7 @@ typedef struct perfis_t{
 
 int* RealocaInt(int tamanho, int* vetor);
 
-produto_s* RealocProd(int n_prod, produto_s* produtos);
-
 perfis_s* Reallocarperfis(int n_perfis, perfis_s* perfis);
-
-void CadastrarProduto(produto_s* produtos, int n_produtos, perfis_s* perfis, int n_perfis);
 
 void CadastrarPerfil(perfis_s* perfis, int n_perfis);
 
