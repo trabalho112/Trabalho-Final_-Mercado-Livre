@@ -17,7 +17,7 @@ typedef struct produto_t{
     char nome[TAM_NOME];
     char descricao[TAM_DESC];
     int qntd;
-    int identificador_vendedor;
+    char identificador_vendedor[TAM_ID];
 
 }produto_s;
     
@@ -129,35 +129,66 @@ int LerArquivo(perfis_s* perfis){
 }/*/
 
 
- void CadastrarProduto(produto_s* produtos, int n_produtos, perfis_s* perfis, int n_perfis){
-
-    produtos[n_produtos-1].id_produto = n_produtos;
+ void CadastrarProduto(produto_s* produtos, int n_produtos, perfis_s* perfis, int n_perfis) {
+    produtos[n_produtos - 1].id_produto = n_produtos;
 
     printf("Digite o nome do produto: \n");
-    fgets(produtos[n_produtos-1].nome,TAM_NOME,stdin);
-    produtos[n_produtos-1].nome[strcspn(produtos[n_produtos-1].nome, "\n")] = '\0';
+    fgets(produtos[n_produtos - 1].nome, TAM_NOME, stdin);
+    produtos[n_produtos - 1].nome[strcspn(produtos[n_produtos - 1].nome, "\n")] = '\0';
 
     printf("Digite uma breve descricao do produto:\n");
-    fgets(produtos[n_produtos-1].descricao,TAM_NOME,stdin);
-    produtos[n_produtos-1].descricao[strcspn(produtos[n_produtos-1].descricao, "\n")] = '\0';
+    fgets(produtos[n_produtos - 1].descricao, TAM_DESC, stdin);
+    produtos[n_produtos - 1].descricao[strcspn(produtos[n_produtos - 1].descricao, "\n")] = '\0';
 
     printf("Digite a quantidade desse produto\n");
-    scanf("%d",&produtos[n_produtos-1].qntd);
+    scanf("%d", &produtos[n_produtos - 1].qntd);
+    getchar();
 
     printf("Insira o ID do usuario a qual esse produto pertence: \n");
-    scanf("%d",&produtos[n_produtos-1].identificador_vendedor);
+    fgets(produtos[n_produtos - 1].identificador_vendedor, TAM_ID, stdin);
+    produtos[n_produtos - 1].identificador_vendedor[strcspn(produtos[n_produtos - 1].identificador_vendedor, "\n")] = '\0';
 
-    perfis_s* perfilEscolhido = &perfis[produtos[n_produtos-1].identificador_vendedor-1];
+    perfis_s* perfilEscolhido = NULL;
 
-    perfilEscolhido->tam_produtos_Vendidos++;
+    for (int i = 0; i < n_perfis; i++) {
+        if (strcmp(perfis[i].id, produtos[n_produtos - 1].identificador_vendedor) == 0) {
 
-    perfilEscolhido->id_produtos_Vendidos = RealocaInt(perfilEscolhido->tam_produtos_Vendidos,perfilEscolhido->id_produtos_Vendidos);
+            perfilEscolhido = &perfis[i];
+            break;
+        }
+    }
+ }
 
-    perfilEscolhido->id_produtos_Vendidos[perfilEscolhido->tam_produtos_Vendidos-1] = produtos[n_produtos-1].id_produto;
+void ListarProdutos(produto_s* produtos, int n_produtos) {
 
-    printf("Produto Cadastrado!\n");
+    printf("Lista de produtos cadastrados:\n");
 
-    return;
+    for (int i = 0; i < n_produtos; i++) {
+
+        printf("ID: %d | Nome: %s | Descricao: %s | Quantidade: %d | ID Vendedor: %s\n", produtos[i].id_produto, produtos[i].nome, produtos[i].descricao, produtos[i].qntd, produtos[i].identificador_vendedor);
+    }
+}
+
+void ListarProdutosPorVendedor(produto_s* produtos, int n_produtos, const char* id_vendedor) {
+
+
+    printf("Produtos do vendedor com ID %s:\n", id_vendedor);
+
+    int encontrado = 0;
+
+    for (int i = 0; i < n_produtos; i++) {
+        if (strcmp(produtos[i].identificador_vendedor, id_vendedor) == 0) {
+
+            printf("ID: %d | Nome: %s | Descricao: %s | Quantidade: %d\n", produtos[i].id_produto, produtos[i].nome, produtos[i].descricao, produtos[i].qntd);
+
+            encontrado = 1;
+        }
+    }
+
+    if (!encontrado) {
+
+        printf("Nenhum produto encontrado para este vendedor.\n");
+    }
 }
 
 void CadastrarPerfil(perfis_s* perfis, int n_perfis){
@@ -241,8 +272,6 @@ void ImprimirDados(perfis_s* perfis, int n_perfis){
     }
 
 }
-
-
 
 int LogarComId(perfis_s* perfis, int n_perfis){
     char ID[TAM_ID];
@@ -405,6 +434,7 @@ int main(int argv, char ** argc){
 
     perfis_s* perfis= NULL;
     produto_s* produtos = NULL;
+    char id_vendedor[TAM_ID];
     int n_perfis = 0, n_produtos = 0;
     int opcao;
 
@@ -422,6 +452,8 @@ int main(int argv, char ** argc){
         printf("\t2 - Imprimir Perfis\n");
         printf("\t3 - Logar\n");
         printf("\t4 - Cadastrar produto\n");
+        printf("\t5 - Listar produtos\n");
+        printf("\t6 - Listar produtos de um vendedor\n");
         printf("\t0 - Sair\n");
         scanf("%d%*c", &opcao);
 
@@ -456,7 +488,32 @@ int main(int argv, char ** argc){
             CadastrarProduto(produtos,n_produtos,perfis,n_perfis);
 
             break;
+        case 5:
 
+                if(n_produtos == 0){
+
+                    printf("Nenhum produto cadastrado!\n");
+                    continue;
+                }
+
+                ListarProdutos(produtos, n_produtos);
+                break;
+
+            case 6: 
+            
+                if(n_produtos == 0){
+
+                    printf("Nenhum produto cadastrado!\n");
+                    continue;
+                }
+
+                printf("Digite o ID do vendedor: ");
+                fgets(id_vendedor, TAM_ID, stdin);
+                id_vendedor[strcspn(id_vendedor, "\n")] = '\0';
+
+                ListarProdutosPorVendedor(produtos, n_produtos, id_vendedor);
+
+                break;
         case 0:
             printf("Tchau!\n");
            // EscreverArquivo(perfis, n_perfis);
